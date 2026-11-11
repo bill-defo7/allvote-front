@@ -28,6 +28,7 @@ export default function VoteModal({ concours, candidat, onClose, onConfirmed }) 
   const [resultat, setResultat] = useState(null)
   const timer = useRef(null)
   const debut = useRef(0)
+  const cleRef = useRef(null)   // clé d'idempotence : stable à travers les relances, réinitialisée sur « Réessayer »
 
   const nb = Math.min(MAX_VOIX, Math.max(1, parseInt(nbVoix, 10) || 1))
   // Frais de service (ex. 5 %) payés en plus par le votant ; le serveur recalcule et fait foi.
@@ -67,16 +68,27 @@ export default function VoteModal({ concours, candidat, onClose, onConfirmed }) 
     ev.preventDefault()
     if (hp) return
     if (!validate()) return
+    if (!cleRef.current) cleRef.current = crypto.randomUUID()   // une seule clé par action de vote
     setEnvoi(true)
     try {
       const r = await publicApi.voter({
         idConcours: concours.idConcours, idCandidat: candidat.idCandidat, nbVoix: nb,
-        operateur, telephone: numero.trim(), website: hp,
+        operateur, telephone: numero.trim(), website: hp, cleIdempotence: cleRef.current,
       })
       setVote(r)
-      setEtape('attente')
-      debut.current = Date.now()
-      suivre(r.reference)
+      // Une relance idempotente peut renvoyer une transaction déjà résolue → on va directement au résultat.
+      if (r.statut === 'CONFIRME') {
+        setResultat({ statut: 'CONFIRME', nbVoix: r.nbVoix })
+        setEtape('ok')
+        onConfirmed?.()
+      } else if (r.statut === 'ECHOUE' || r.statut === 'EXPIRE' || r.statut === 'A_VERIFIER') {
+        setResultat({ statut: r.statut, nbVoix: r.nbVoix })
+        setEtape('echec')
+      } else {
+        setEtape('attente')
+        debut.current = Date.now()
+        suivre(r.reference)
+      }
     } catch (e) {
       if (e.champs) setErrors(e.champs)
       setErrors((x) => ({ ...x, global: e.message }))
@@ -185,7 +197,7 @@ export default function VoteModal({ concours, candidat, onClose, onConfirmed }) 
               ? 'Votre paiement doit être vérifié par l\'organisation. Vos voix seront ajoutées après contrôle.'
               : 'Aucune somme n\'a été prélevée et aucune voix n\'a été comptée.'}</p>
             {resultat?.statut !== 'A_VERIFIER' && (
-              <button className="btn btn-gold" onClick={() => { setEtape('form'); setResultat(null); setVote(null) }}>Réessayer</button>
+              <button className="btn btn-gold" onClick={() => { setEtape('form'); setResultat(null); setVote(null); cleRef.current = null }}>Réessayer</button>
             )}
           </div>
         )}

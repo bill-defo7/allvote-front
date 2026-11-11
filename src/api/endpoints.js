@@ -15,7 +15,7 @@ export const publicApi = {
   organisateur: (slug) => apiFetch(`/public/organisateurs/${encodeURIComponent(slug)}`),
   concours: (id) => apiFetch(`/public/concours/${id}`),
   candidat: (idConcours, idCandidat) => apiFetch(`/public/concours/${idConcours}/candidats/${idCandidat}`),
-  /** body : { idConcours, idCandidat, nbVoix, operateur: 'MTN'|'ORANGE', telephone, website } */
+  /** body : { idConcours, idCandidat, nbVoix, operateur: 'MTN'|'ORANGE', telephone, website, cleIdempotence } */
   voter: (body) => apiFetch('/public/votes', { method: 'POST', body }),
   statutVote: (reference) => apiFetch(`/public/votes/${reference}`),
   /** { fraisVotantPourcentage } : frais de service ajoutés au prix des voix */

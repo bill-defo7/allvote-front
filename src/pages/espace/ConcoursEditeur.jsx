@@ -344,7 +344,7 @@ function CandidatModal({ edition, onClose, onSave }) {
             <textarea id="cd-desc" rows={3} maxLength={280} value={f.description} onChange={(e) => set('description', e.target.value)}
               placeholder="Quelques mots affichés sur la carte et la page du candidat" />
           </div>
-          <ImageUpload id="cd-photo" label="Photo" value={f.photoUrl} onChange={(u) => set('photoUrl', u)} />
+          <ImageUpload id="cd-photo" label="Photo du candidat" portrait value={f.photoUrl} onChange={(u) => set('photoUrl', u)} />
           {erreur && <div className="err" style={{ marginBottom: 12 }}>⚠️ {erreur}</div>}
           <button className="btn btn-gold btn-block" type="submit" disabled={envoi}>{envoi ? 'Enregistrement…' : x ? 'Enregistrer' : 'Ajouter le candidat'}</button>
         </form>
