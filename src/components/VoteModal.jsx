@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { publicApi } from '../api/endpoints'
 import { useApi } from '../api/useApi'
 import { fmt, calculerFrais } from '../utils/helpers'
+import { ORANGE_INDISPONIBLE } from '../config'
 
 const PHONE_RE = /^(\+?237)?\s*6(\s*\d){8}$/   // 6XXXXXXXX, avec ou sans 237 / espaces
 const POLL_MS = 3000
@@ -45,6 +46,7 @@ export default function VoteModal({ concours, candidat, onClose, onConfirmed }) 
     else if (Number(nbVoix) > MAX_VOIX) e.nbVoix = `Maximum ${fmt(MAX_VOIX)} voix par paiement.`
     if (!PHONE_RE.test(numero.trim())) e.telephone = 'Numéro camerounais invalide (6XXXXXXXX).'
     if (!operateur) e.operateur = 'Choisissez un opérateur.'
+    else if (ORANGE_INDISPONIBLE && operateur === 'ORANGE') e.operateur = 'Orange Money est indisponible pour le moment. Choisissez MTN.'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -115,13 +117,21 @@ export default function VoteModal({ concours, candidat, onClose, onConfirmed }) 
                   className={errors.telephone ? 'invalid' : ''} onChange={(e) => setNumero(e.target.value)} />
                 {errors.telephone && <div className="err">{errors.telephone}</div>}
               </div>
+              {ORANGE_INDISPONIBLE && (
+                <div className="alerte-paiement" role="status">
+                  ⚠️ Les paiements <strong>Orange Money</strong> sont momentanément indisponibles.
+                  Merci de payer avec <strong>MTN Mobile Money</strong>.
+                </div>
+              )}
               <div className="field">
                 <label htmlFor="op">Opérateur</label>
                 <select id="op" value={operateur} className={errors.operateur ? 'invalid' : ''}
                   onChange={(e) => setOperateur(e.target.value)}>
                   <option value="">— Choisir —</option>
                   <option value="MTN">MTN Mobile Money</option>
-                  <option value="ORANGE">Orange Money</option>
+                  <option value="ORANGE" disabled={ORANGE_INDISPONIBLE}>
+                    Orange Money{ORANGE_INDISPONIBLE ? ' (indisponible)' : ''}
+                  </option>
                 </select>
                 {errors.operateur && <div className="err">{errors.operateur}</div>}
               </div>

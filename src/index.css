@@ -162,6 +162,7 @@ section{padding:90px 0;position:relative}
 .field input,.field textarea,.field select{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Poppins';font-size:.9rem}
 .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--gold)}
 .field .err{color:#e74c3c;font-size:.74rem;margin-top:4px}
+.alerte-paiement{background:rgba(212,175,55,.1);border:1px solid var(--gold);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:.82rem;line-height:1.5;color:var(--text)}
 .field input.invalid,.field select.invalid{border-color:#e74c3c}
 .hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
 

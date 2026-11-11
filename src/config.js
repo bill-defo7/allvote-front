@@ -5,6 +5,10 @@ export const SITE_URL = (env.VITE_SITE_URL || 'https://allvote.cm').replace(/\/+
 export const SITE_NAME = 'AllVote'
 export const SLOGAN = 'Élevez votre candidat vers la victoire.'
 
+/** Orange Money momentanément indisponible : true = message dans la fenêtre de vote + option grisée.
+ *  Repasser à false quand Orange refonctionne, puis rebuild. */
+export const ORANGE_INDISPONIBLE = true
+
 export const CONTACT = {
   tel: env.VITE_CONTACT_TEL || '',
   email: env.VITE_CONTACT_EMAIL || '',
